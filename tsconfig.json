@@ -22,10 +22,10 @@
     "noFallthroughCasesInSwitch": true,
 
     "strict": true,
-    "strictNullChecks": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true
   },
   "include": ["src"]
 }

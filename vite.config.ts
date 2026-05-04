@@ -7,7 +7,7 @@ export default defineConfig({
       name: 'litExpose',
       filename: 'remoteEntry.js',
       exposes: {
-        './my-element': './src/my-element.ts',
+        './my-element': './src/todo-list.ts',
       },
       shared: {
         lit: {

@@ -180,6 +180,7 @@ export class ToDoList extends LitElement {
               </li>`
   }
 
+  // ... existing code ...
   static styles = css`
     :host {
       --todo-bg: #ffffff;
@@ -343,10 +344,23 @@ export class ToDoList extends LitElement {
       border: 1px solid var(--todo-border);
       border-radius: var(--todo-radius);
       background: #ffffff;
+      animation: todo-item-enter 0.8s ease-out both;
       transition:
         border-color 0.2s ease,
         background-color 0.2s ease,
         box-shadow 0.2s ease;
+    }
+
+    @keyframes todo-item-enter {
+      from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     li:hover {
@@ -429,6 +443,18 @@ export class ToDoList extends LitElement {
       }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      li {
+        animation: none;
+      }
+
+      button,
+      input[type='text'],
+      li {
+        transition: none;
+      }
+    }
+
     @media (prefers-color-scheme: dark) {
       :host {
         --todo-bg: #111c18;
@@ -455,6 +481,13 @@ export class ToDoList extends LitElement {
     }
   `
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'todo-list': ToDoList
+  }
+}
+
 
 declare global {
   interface HTMLElementTagNameMap {

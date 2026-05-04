@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import { federation } from '@module-federation/vite';
+import { defineConfig } from 'vite'
+import { federation } from '@module-federation/vite'
 
 export default defineConfig({
   plugins: [
@@ -19,4 +19,4 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-});
+})

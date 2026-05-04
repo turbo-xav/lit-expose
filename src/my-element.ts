@@ -1,12 +1,14 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-const REMOTE_BASE_URL = import.meta.env.VITE_REMOTE_BASE_URL
+const REMOTE_BASE_URL = import.meta.env['VITE_REMOTE_BASE_URL']
 
 
-const litLogo = `${REMOTE_BASE_URL}/lit.svg`
-const viteLogo = `${REMOTE_BASE_URL}/vite.svg`
-const heroImg = `${REMOTE_BASE_URL}/hero.png`
+const assetUrl = (path: string) => `${REMOTE_BASE_URL}${path}`
 
+const litLogo = assetUrl('/lit.svg')
+const viteLogo = assetUrl('/vite.svg')
+const heroImg = assetUrl('/hero.png')
+const iconsSvg = assetUrl('/icons.svg')
 
 /**
  * An example element.
@@ -52,19 +54,19 @@ export class MyElement extends LitElement {
       <section id="next-steps">
         <div id="docs">
           <svg class="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
+            <use href="${iconsSvg}#documentation-icon"></use>
           </svg>
           <h2>Documentation</h2>
           <p>Your questions, answered</p>
           <ul>
             <li>
-              <a href="https://vite.dev/" target="_blank">
+              <a href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
                 <img class="logo" src=${viteLogo} alt="" />
                 Explore Vite
               </a>
             </li>
             <li>
-              <a href="https://lit.dev/" target="_blank">
+              <a href="https://lit.dev/" target="_blank" rel="noopener noreferrer">
                 <img class="button-icon" src=${litLogo} alt="" />
                 Learn more
               </a>
@@ -79,7 +81,7 @@ export class MyElement extends LitElement {
           <p>Join the Vite community</p>
           <ul>
             <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
+              <a href="https://github.com/vitejs/vite" target="_blank" rel="noopener noreferrer">
                 <svg class="button-icon" role="presentation" aria-hidden="true">
                   <use href="/icons.svg#github-icon"></use>
                 </svg>
@@ -87,7 +89,7 @@ export class MyElement extends LitElement {
               </a>
             </li>
             <li>
-              <a href="https://chat.vite.dev/" target="_blank">
+              <a href="https://chat.vite.dev/" target="_blank" rel="noopener noreferrer">
                 <svg class="button-icon" role="presentation" aria-hidden="true">
                   <use href="/icons.svg#discord-icon"></use>
                 </svg>
@@ -95,7 +97,7 @@ export class MyElement extends LitElement {
               </a>
             </li>
             <li>
-              <a href="https://x.com/vite_js" target="_blank">
+              <a rel="noopener noreferrer" href="https://x.com/vite_js" target="_blank">
                 <svg class="button-icon" role="presentation" aria-hidden="true">
                   <use href="/icons.svg#x-icon"></use>
                 </svg>
@@ -103,7 +105,7 @@ export class MyElement extends LitElement {
               </a>
             </li>
             <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
+              <a rel="noopener noreferrer" href="https://bsky.app/profile/vite.dev" target="_blank">
                 <svg class="button-icon" role="presentation" aria-hidden="true">
                   <use href="/icons.svg#bluesky-icon"></use>
                 </svg>

@@ -5,6 +5,7 @@ type TodoItem = {
   id: number
   label: string
   completed: boolean
+  isDeleting?: boolean
 }
 
 type TodoListChangeDetail = {
@@ -138,9 +139,21 @@ export class ToDoList extends LitElement {
   }
 
   private deleteTodo(id: number) {
-    this.todos = this.todos.filter((todo) => todo.id !== id)
-    this.emitChange()
+    this.todos = this.todos.map((todo) =>
+        todo.id === id
+            ? {
+              ...todo,
+              isDeleting: true,
+            }
+            : todo,
+    )
+
+    window.setTimeout(() => {
+      this.todos = this.todos.filter((todo) => todo.id !== id)
+      this.emitChange()
+    }, 800)
   }
+
 
   private emitChange() {
     this.dispatchEvent(
@@ -159,11 +172,16 @@ export class ToDoList extends LitElement {
 
 // ... existing code ...
   private renderTodo(todo: TodoItem) {
-    return html`<li class=${todo.completed ? 'completed' : ''} part="item">
+    const classes = [todo.completed ? 'completed' : '', todo.isDeleting ? 'deleting' : '']
+        .filter(Boolean)
+        .join(' ')
+
+    return html`<li class=${classes} part="item">
                 <label>
                   <input
                     type="checkbox"
                     .checked=${todo.completed}
+                    ?disabled=${todo.isDeleting}
                     @change=${() => this.toggleTodo(todo.id)}
                   />
                   <span>${todo.label}</span>
@@ -183,41 +201,33 @@ export class ToDoList extends LitElement {
   // ... existing code ...
   static styles = css`
     :host {
-      --todo-bg: #ffffff;
-      --todo-surface: #f7faf8;
-      --todo-text: #1f2933;
-      --todo-muted: #5f6f67;
-      --todo-border: #d8e3dc;
-      --todo-accent: #00875a;
-      --todo-accent-hover: #006b48;
-      --todo-accent-soft: #e6f4ee;
-      --todo-danger: #b42318;
-      --todo-danger-soft: #fff1f0;
-      --todo-radius: 8px;
-      --todo-shadow: 0 8px 24px rgba(0, 80, 55, 0.08);
+      --bg: #ffffff;
+      --surface: #f7faf8;
+      --text: #1f2933;
+      --muted: #5f6f67;
+      --border: #d8e3dc;
+      --accent: #00875a;
+      --accent-hover: #006b48;
+      --accent-soft: #e6f4ee;
+      --danger: #b42318;
+      --danger-soft: #fff1f0;
+      --radius: 8px;
+      --shadow: 0 8px 24px rgba(0, 80, 55, 0.08);
 
       display: block;
       max-width: 560px;
-      color: var(--todo-text);
-      font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        Roboto,
-        sans-serif;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     .container {
       position: relative;
       overflow: hidden;
       padding: 28px;
-      border: 1px solid var(--todo-border);
-      border-radius: var(--todo-radius);
-      background:
-        linear-gradient(180deg, rgba(0, 135, 90, 0.06), transparent 120px),
-        var(--todo-bg);
-      box-shadow: var(--todo-shadow);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(0, 135, 90, 0.06), transparent 120px), var(--bg);
+      box-shadow: var(--shadow);
     }
 
     .container::before {
@@ -225,37 +235,43 @@ export class ToDoList extends LitElement {
       position: absolute;
       inset: 0 auto 0 0;
       width: 5px;
-      background: var(--todo-accent);
+      background: var(--accent);
+    }
+
+    header,
+    .form {
+      margin-bottom: 22px;
     }
 
     header {
-      margin-bottom: 22px;
       padding-left: 4px;
     }
 
-    h2 {
+    h2,
+    p {
       margin: 0;
-      color: var(--todo-text);
+    }
+
+    h2 {
+      color: var(--text);
       font-size: 24px;
-      font-weight: 700;
       line-height: 1.2;
       letter-spacing: -0.02em;
     }
 
     p {
-      margin: 8px 0 0;
-      color: var(--todo-muted);
+      margin-top: 8px;
+      color: var(--muted);
       font-size: 14px;
     }
 
     .form {
       display: flex;
       gap: 12px;
-      margin-bottom: 22px;
       padding: 16px;
-      border: 1px solid var(--todo-border);
-      border-radius: var(--todo-radius);
-      background: var(--todo-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
     }
 
     label {
@@ -265,20 +281,24 @@ export class ToDoList extends LitElement {
     label span {
       display: block;
       margin-bottom: 6px;
-      color: var(--todo-muted);
+      color: var(--muted);
       font-size: 13px;
       font-weight: 600;
+    }
+
+    input,
+    button {
+      font: inherit;
+      border-radius: 6px;
     }
 
     input[type='text'] {
       width: 100%;
       box-sizing: border-box;
-      border: 1px solid var(--todo-border);
-      border-radius: 6px;
       padding: 11px 12px;
-      color: var(--todo-text);
+      border: 1px solid var(--border);
+      color: var(--text);
       background: #ffffff;
-      font: inherit;
       transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -288,38 +308,41 @@ export class ToDoList extends LitElement {
       color: #8b9b93;
     }
 
-    input[type='text']:focus {
-      border-color: var(--todo-accent);
+    input[type='text']:focus,
+    button:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(0, 135, 90, 0.16);
+      box-shadow: 0 0 0 3px rgba(0, 135, 90, 0.18);
+    }
+
+    input[type='text']:focus {
+      border-color: var(--accent);
+    }
+
+    input[type='checkbox'] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
 
     button {
       border: 0;
-      border-radius: 6px;
       padding: 11px 16px;
       color: #ffffff;
-      background: var(--todo-accent);
-      font: inherit;
+      background: var(--accent);
       font-weight: 700;
       cursor: pointer;
       transition:
         background-color 0.2s ease,
-        box-shadow 0.2s ease,
         transform 0.1s ease;
     }
 
     button:hover {
-      background: var(--todo-accent-hover);
+      background: var(--accent-hover);
     }
 
     button:active {
       transform: translateY(1px);
-    }
-
-    button:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(0, 135, 90, 0.22);
     }
 
     .form button {
@@ -328,11 +351,11 @@ export class ToDoList extends LitElement {
     }
 
     ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
       display: grid;
       gap: 10px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
     }
 
     li {
@@ -341,14 +364,23 @@ export class ToDoList extends LitElement {
       justify-content: space-between;
       gap: 12px;
       padding: 14px;
-      border: 1px solid var(--todo-border);
-      border-radius: var(--todo-radius);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       background: #ffffff;
       animation: todo-item-enter 0.8s ease-out both;
       transition:
-        border-color 0.2s ease,
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+    }
+
+    li.deleting {
+      pointer-events: none;
+      animation: todo-item-exit 0.8s ease-in both;
+    }
+
+    li:hover {
+      border-color: color-mix(in srgb, var(--accent), white 55%);
+      box-shadow: 0 4px 14px rgba(0, 80, 55, 0.06);
     }
 
     @keyframes todo-item-enter {
@@ -363,9 +395,17 @@ export class ToDoList extends LitElement {
       }
     }
 
-    li:hover {
-      border-color: color-mix(in srgb, var(--todo-accent), white 55%);
-      box-shadow: 0 4px 14px rgba(0, 80, 55, 0.06);
+    // ... existing code ...
+    @keyframes todo-item-exit {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
     }
 
     li label {
@@ -375,99 +415,74 @@ export class ToDoList extends LitElement {
       min-width: 0;
     }
 
-    input[type='checkbox'] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--todo-accent);
-      cursor: pointer;
-    }
-
     li label span {
       margin: 0;
-      color: var(--todo-text);
+      color: var(--text);
       font-size: 15px;
       overflow-wrap: anywhere;
     }
 
     li.completed {
-      background: var(--todo-accent-soft);
+      background: var(--accent-soft);
     }
 
     li.completed label span {
-      color: var(--todo-muted);
+      color: var(--muted);
       text-decoration: line-through;
     }
 
     li button {
       flex: 0 0 auto;
       border: 1px solid rgba(180, 35, 24, 0.22);
-      color: var(--todo-danger);
-      background: var(--todo-danger-soft);
+      color: var(--danger);
+      background: var(--danger-soft);
       font-size: 14px;
-      font-weight: 700;
     }
 
     li button:hover {
       color: #ffffff;
-      background: var(--todo-danger);
+      background: var(--danger);
     }
 
-    .empty {
-      padding: 18px;
-      text-align: center;
-      border: 1px dashed var(--todo-border);
-      border-radius: var(--todo-radius);
-      background: var(--todo-surface);
-    }
 
     @media (max-width: 520px) {
       .container {
         padding: 22px;
       }
 
-      .form {
-        flex-direction: column;
-      }
-
-      .form button {
-        align-self: stretch;
-      }
-
+      .form,
       li {
-        align-items: stretch;
         flex-direction: column;
       }
 
+      .form button,
       li button {
         width: 100%;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      li {
+      *,
+      *::before,
+      *::after {
         animation: none;
-      }
-
-      button,
-      input[type='text'],
-      li {
         transition: none;
       }
     }
 
     @media (prefers-color-scheme: dark) {
       :host {
-        --todo-bg: #111c18;
-        --todo-surface: #15251f;
-        --todo-text: #f3faf6;
-        --todo-muted: #a8b8b0;
-        --todo-border: #294139;
-        --todo-accent: #00a66f;
-        --todo-accent-hover: #00bf80;
-        --todo-accent-soft: rgba(0, 166, 111, 0.16);
-        --todo-danger: #ff6b5f;
-        --todo-danger-soft: rgba(255, 107, 95, 0.12);
-        --todo-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --bg: #111c18;
+        --surface: #15251f;
+        --text: #f3faf6;
+        --muted: #a8b8b0;
+        --border: #294139;
+        --accent: #00a66f;
+        --accent-hover: #00bf80;
+        --accent-soft: rgba(0, 166, 111, 0.16);
+        --danger: #ff6b5f;
+        --danger-soft: rgba(255, 107, 95, 0.12);
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       }
 
       input[type='text'],
@@ -481,13 +496,6 @@ export class ToDoList extends LitElement {
     }
   `
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'todo-list': ToDoList
-  }
-}
-
 
 declare global {
   interface HTMLElementTagNameMap {

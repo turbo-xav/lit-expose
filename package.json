@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
@@ -14,6 +16,7 @@
   },
   "devDependencies": {
     "@module-federation/vite": "^1.15.0",
+    "prettier": "^3.8.3",
     "typescript": "~6.0.2",
     "vite": "^8.0.10"
   }

@@ -395,7 +395,6 @@ export class ToDoList extends LitElement {
       }
     }
 
-    // ... existing code ...
     @keyframes todo-item-exit {
       from {
         opacity: 1;

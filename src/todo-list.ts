@@ -61,7 +61,9 @@ export class ToDoList extends LitElement {
     return html`
       <section class="container" part="container">
         <header>
-          <h2 part="title">${this.title}</h2>
+          <slot name="title">
+            <h2 part="title">${this.title}</h2>
+          </slot>
           <p>
             ${this.remainingCount} tâche${this.remainingCount > 1 ? 's' : ''}
             restante${this.remainingCount > 1 ? 's' : ''}

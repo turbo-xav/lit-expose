@@ -7,25 +7,23 @@ export default defineConfig({
       name: 'litExpose',
       filename: 'remoteEntry.js',
       exposes: {
-        './my-element': './src/todo-list.ts',
+        './todo-list': './src/todo-list.ts',
       },
       shared: {
         lit: {
           singleton: true,
+          requiredVersion: '^3.3.2',
+          import: false,
+        },
+        'lit/decorators.js': {
+          singleton: true,
+          requiredVersion: '^3.3.2',
+          import: false,
         },
       },
     }),
   ],
   build: {
-    target: 'esnext',
-    lib: {
-      entry: 'src/index.ts',
-      name: 'TodoList',
-      fileName: 'index',
-      formats: ['es'],
-    },
-    rolldownOptions: {
-      external: ['lit'],
-    },
+    target: 'esnext'
   },
 })
